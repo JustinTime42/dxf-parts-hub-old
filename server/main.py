@@ -3,7 +3,7 @@ from flask_cors import CORS
 import ezdxf
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=['http://127.0.0.1:5000'])
 
 @app.route('/api/generate_gasket', methods=['POST'])
 def generate_gasket():
@@ -36,6 +36,8 @@ def generate_gasket():
         outside_circle = msp.add_circle(center=(0, 0), radius=outside_diameter/2)
 
     # Save the DXF file
+    doc.header['$INSUNITS'] = 1 # Set units to inches
+    doc.header['$MEASUREMENT'] = 0 # Set measurement to english
     doc.saveas('{}.dxf'.format(file_name))
     return jsonify({
         'message': '{}.dxf generated successfully'.format(file_name),

@@ -5,45 +5,43 @@ import {shapes} from '../../utils/shapes';
 
 type ShapeEditorProps = {
   params: {
-    slug: string;
+    shape: string;
   };
 };
 
 const ShapeEditor: React.FC<ShapeEditorProps> = ({ params }: { params: { shape: string } }) => {
 
-
-  // Rest of the code
-  const shape = shapes.find((shape) => shape.name === params.shape);
-  const [innerDiameter, setInnerDiameter] = useState(0);
-  const [outerDiameter, setOuterDiameter] = useState(0);
-  const [spacing, setSpacing] = useState(0);
+  const [shape, setShape] = useState(shapes.find((shape) => shape.name === params.shape) || null);
+  const [dimensions, setDimensions] = useState<{[key: string]: number | string}>({});
+  const [spacing, setSpacing] = useState<number | string>(0);
   const [rows, setRows] = useState(0);
   const [cols, setCols] = useState(0);
   const [fileName, setFileName] = useState('');
 
+  useEffect(() => {
+    if (params.shape) {
+      setShape(shapes.find((shape) => shape.name === params.shape) || null);
+    }
+  }, [params.shape]);
+
   const handleSubmit = async (e: React.FormEvent) => {
+    const numbers: { [key: string]: number } = {}; 
+    Object.keys(dimensions).forEach((key) => {
+      numbers[key] = Number(dimensions[key]);
+    });
+    console.log(numbers);
     e.preventDefault();
-
-    const data = {
-      innerDiameter,
-      outerDiameter,
-      spacing,
-      rows,
-      cols,
-      fileName,
-    };
-
     try {
       await fetch(`http://127.0.0.1:5000/api/generate_gasket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({...numbers, spacing, rows, cols, fileName}),
       });
       // Handle success
     } catch (error) {
-      // Handle error
+      alert('Error generating gasket');
     }
   };
 
@@ -51,24 +49,29 @@ const ShapeEditor: React.FC<ShapeEditorProps> = ({ params }: { params: { shape: 
     return <div>Shape not found</div>;
   }
   return (
-    <div className="container mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <TextField
-          label="Inner Diameter"
-          value={Number(innerDiameter)}
-          onChange={(e) => setInnerDiameter(Number(e.target.value))}
-          fullWidth
-        />
-        <TextField
-          label="Outer Diameter"
-          value={Number(outerDiameter)}
-          onChange={(e) => setOuterDiameter(Number(e.target.value))}
-          fullWidth
-        />
+    <div>
+      <form onSubmit={handleSubmit}>
+        {
+          shape.dimensions &&
+          shape.dimensions.map((dimension, index) => {
+            return (
+              <TextField
+                key={index}
+                label={dimension.label}
+                value={dimensions[dimension.name] || ''}
+                onChange={(e) => {
+                    setDimensions({...dimensions, [dimension.name]: e.target.value})
+                }}
+                fullWidth
+              />
+            );
+          
+          })
+        }
         <TextField
           label="Spacing"
-          value={Number(spacing)}
-          onChange={(e) => setSpacing(Number(e.target.value))}
+          value={spacing || ''}
+          onChange={(e) => setSpacing(e.target.value)}
           fullWidth
         />
         <TextField

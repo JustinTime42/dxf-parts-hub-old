@@ -1,4 +1,4 @@
-// File: C:\Users\justi\Code\dxf-builder\dxf-ui\src\app\layout.tsx
+// File: C:\Users\justi\Code\dxf-parts-hub\dxf-ui\src\app\layout.tsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
