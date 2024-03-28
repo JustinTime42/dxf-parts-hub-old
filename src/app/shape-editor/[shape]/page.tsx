@@ -32,7 +32,7 @@ const ShapeEditor: React.FC<ShapeEditorProps> = ({ params }: { params: { shape: 
     console.log(numbers);
     e.preventDefault();
     try {
-      await fetch(`http://127.0.0.1:5328/api/generate_gasket`, {
+      await fetch(`/api/generate_gasket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
