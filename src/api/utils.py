@@ -1,5 +1,5 @@
 import ezdxf
-import sys
+from ezdxf.addons.drawing import Frontend, RenderContext, svg, layout
 import math
 
 
@@ -61,3 +61,20 @@ def generate_gasket_with_bolt_holes(inner_diameter, outer_diameter, num_bolt_hol
 
 # Call function with user input
 # generate_gasket_dxf(20, 50)
+    
+def create_svg(doc, file_name):
+    msp = doc.modelspace()
+    # 1. create the render context
+    context = RenderContext(doc)
+    # 2. create the backend
+    backend = svg.SVGBackend()
+    # 3. create the frontend
+    frontend = Frontend(context, backend)
+    # 4. draw the modelspace
+    frontend.draw_layout(msp)
+    # 5. create an A4 page layout, not required for all backends
+    page = layout.Page(0, 0, layout.Units.mm, margins=layout.Margins.all(2))
+    # 6. get the SVG rendering as string - this step is backend dependent
+    svg_string = backend.get_string(page)
+    with open(file_name, "wt", encoding="utf8") as fp:
+        fp.write(svg_string)
