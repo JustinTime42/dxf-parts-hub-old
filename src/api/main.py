@@ -1,9 +1,8 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+
 import ezdxf
 
 app = Flask(__name__)
-CORS(app, origins=['http://127.0.0.1:5328'])
 
 @app.route('/api/generate_gasket', methods=['POST'])
 def generate_gasket():
